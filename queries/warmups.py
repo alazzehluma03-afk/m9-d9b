@@ -15,9 +15,9 @@ def q1_list_recipes() -> str:
     Result-set shape: rows with a single column named `name`. One row per
     :Recipe node. Order is not asserted.
     """
-    # TODO: Return a Cypher string that matches every :Recipe and returns
+    #  Return a Cypher string that matches every :Recipe and returns
     #       its name column.
-    return ""
+    return "MATCH (r:Recipe) RETURN r.name AS name"
 
 
 def q2_filter_by_cuisine(cuisine_name: str) -> tuple[str, dict]:
@@ -28,10 +28,14 @@ def q2_filter_by_cuisine(cuisine_name: str) -> tuple[str, dict]:
 
     Returns: (cypher_string, params_dict). Use $cuisine in the Cypher.
     """
-    # TODO: Build a parameterized Cypher that joins :Recipe to :Cuisine via
+    #  Build a parameterized Cypher that joins :Recipe to :Cuisine via
     #       :OF_CUISINE and filters Cuisine.name to the $cuisine parameter.
     #       Return the query and {"cuisine": cuisine_name} together.
-    return "", {}
+    query = """
+    MATCH (r:Recipe)-[:OF_CUISINE]->(c:Cuisine {name: $cuisine})
+    RETURN r.name AS name
+    """
+    return query.strip(), {"cuisine": cuisine_name}
 
 
 def q3_subclass_traversal(cuisine_name: str) -> tuple[str, dict]:
@@ -45,6 +49,10 @@ def q3_subclass_traversal(cuisine_name: str) -> tuple[str, dict]:
 
     Returns: (cypher_string, params_dict). Use $cuisine in the Cypher.
     """
-    # TODO: Use [:SUBCLASS_OF*0..] so a recipe's direct cuisine OR any
+    #  Use [:SUBCLASS_OF*0..] so a recipe's direct cuisine OR any
     #       ancestor cuisine can match the $cuisine parameter.
-    return "", {}
+    query = """
+    MATCH (r:Recipe)-[:OF_CUISINE]->(:Cuisine)-[:SUBCLASS_OF*0..]->(c:Cuisine {name: $cuisine})
+    RETURN r.name AS name
+    """
+    return query.strip(), {"cuisine": cuisine_name}
